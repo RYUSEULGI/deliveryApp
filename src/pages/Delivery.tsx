@@ -1,11 +1,20 @@
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {Text, View} from 'react-native';
+import Complete from './Complate';
+import Ing from './Ing';
 
 const Delivery = () => {
+  const Stack = createNativeStackNavigator();
+
   return (
-    <View>
-      <Text>배송 화면</Text>
-    </View>
+    <Stack.Navigator initialRouteName="Ing">
+      <Stack.Screen name="Ing" component={Ing} options={{headerShown: false}} />
+      <Stack.Screen
+        name="Complete"
+        component={Complete}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
   );
 };
 
