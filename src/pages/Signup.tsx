@@ -1,3 +1,4 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
@@ -8,11 +9,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {RootStackParamList} from '../../AppInner';
 import {APISignUp} from '../apis/user/user';
-import DismisskeyboardView from '../components/DismisskeyboardView';
+import DismisskeyboardView from '../components/common/DismisskeyboardView';
 import {emailCheck, passwordCheck} from '../utils/regex';
 
-const SignUp = () => {
+type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
+
+const SignUp = ({navigation}: SignUpScreenProps) => {
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const nameRef = useRef<TextInput | null>(null);
@@ -67,13 +71,15 @@ const SignUp = () => {
     const isSuccess = await APISignUp({email, name, password});
 
     if (!isSuccess) {
+      setLoading(false);
       return;
     }
 
     setLoading(false);
 
-    Alert.alert('성공', '회원가입 되었습니다.');
-  }, [loading, email, name, password]);
+    Alert.alert('알림', '회원가입 되었습니다.');
+    navigation.navigate('SignIn');
+  }, [loading, email, name, password, navigation]);
 
   const isSignin = email && name && password;
 
