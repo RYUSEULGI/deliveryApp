@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import Delivery from './src/pages/Delivery';
 import Settings from './src/pages/Settings';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
+import useSocket from './src/hooks/useSocket';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -29,6 +30,31 @@ const AppInner = () => {
   const isLoggedIn = useSelector(
     (state: RootState) => !!state.user.accessToken,
   );
+
+  const [socket, disconnect] = useSocket();
+
+  useEffect(() => {
+    const dataCallback = (data: any) => {
+      console.log(data);
+    };
+
+    if (socket && isLoggedIn) {
+      socket.emit('login', 'hello'); // 서버에 데이터 보내기
+      socket.on('hello', dataCallback); // 서버에서 데이터 받기
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('hello', dataCallback);
+      }
+    };
+  }, [isLoggedIn, socket]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      disconnect();
+    }
+  }, [isLoggedIn, disconnect]);
 
   return (
     <NavigationContainer>
