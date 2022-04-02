@@ -10,6 +10,11 @@ import Settings from './src/pages/Settings';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import useSocket from './src/hooks/useSocket';
+// import {APIRefreshToken} from './src/apis/user/user';
+// import EncryptedStorage from 'react-native-encrypted-storage';
+// import userSlice from './src/slices/user';
+import {useAppDispatch} from './src/store';
+import orderSlice from './src/slices/order';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -26,6 +31,7 @@ export type RootStackParamList = {
 const AppInner = () => {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
+  const dispatch = useAppDispatch();
 
   const isLoggedIn = useSelector(
     (state: RootState) => !!state.user.accessToken,
@@ -35,26 +41,41 @@ const AppInner = () => {
 
   useEffect(() => {
     const dataCallback = (data: any) => {
-      console.log(data);
+      dispatch(orderSlice.actions.addOrder(data));
     };
 
     if (socket && isLoggedIn) {
-      socket.emit('login', 'hello'); // 서버에 데이터 보내기
-      socket.on('hello', dataCallback); // 서버에서 데이터 받기
+      socket.emit('acceptOrder', 'hello');
+      socket.on('order', dataCallback);
     }
 
     return () => {
       if (socket) {
-        socket.off('hello', dataCallback);
+        socket.off('order', dataCallback);
       }
     };
-  }, [isLoggedIn, socket]);
+  }, [dispatch, isLoggedIn, socket]);
 
   useEffect(() => {
     if (!isLoggedIn) {
       disconnect();
     }
   }, [isLoggedIn, disconnect]);
+
+  // useEffect 비동기로 사용하는 방법
+  // useEffect(() => {
+  //   const getRefreshToken = async () => {
+  //     const {accessToken, refreshToken} = await APIRefreshToken();
+
+  //     if (!accessToken) {
+  //       return;
+  //     }
+
+  //     dispatch(userSlice.actions.setUser(accessToken));
+  //     await EncryptedStorage.setItem('refreshToken', refreshToken);
+  //   };
+  //   getRefreshToken();
+  // }, [dispatch]);
 
   return (
     <NavigationContainer>

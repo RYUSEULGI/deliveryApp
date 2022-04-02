@@ -1,11 +1,12 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {ISignupResponse} from '../apis/user/user.types';
+import {IUser} from '../apis/user/user.types';
 
-const initialState: ISignupResponse = {
+const initialState: IUser = {
   name: '',
   email: '',
   accessToken: '',
   refreshToken: '',
+  money: 0,
 };
 
 const userSlice = createSlice({
@@ -14,6 +15,9 @@ const userSlice = createSlice({
   reducers: {
     setUser(state, action) {
       state.accessToken = action.payload;
+    },
+    setMoney(state, action) {
+      state.money = action.payload;
     },
   },
 });

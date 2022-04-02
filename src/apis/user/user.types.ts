@@ -4,3 +4,7 @@ export interface ISignupResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface IUser extends ISignupResponse {
+  money: number;
+}

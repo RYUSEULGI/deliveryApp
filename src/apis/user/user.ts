@@ -1,6 +1,9 @@
 import axios, {AxiosError} from 'axios';
 import {Alert} from 'react-native';
+import {useSelector} from 'react-redux';
 import {API_URL} from '../../constants/basic';
+import {RootState} from '../../store/reducer';
+import {getToken} from '../response';
 import {ISignupResponse} from './user.types';
 
 export const APISignUp = async (parameter: {
@@ -46,5 +49,75 @@ export const APISignIn = async (parameter: {
       accessToken: '',
       refreshToken: '',
     };
+  }
+};
+
+export const APIRefreshToken = async (): Promise<ISignupResponse> => {
+  try {
+    const refreshToken = getToken;
+    console.log(refreshToken);
+
+    const res = await axios.post(
+      `${API_URL}/refreshToken`,
+      {},
+      {headers: {authorization: `Bearer ${refreshToken}`}},
+    );
+
+    if (res.data) {
+      return {
+        name: res.data.data.name,
+        email: res.data.data.email,
+        accessToken: res.data.data.accessToken,
+        refreshToken: res.data.data.refreshToken,
+      };
+    }
+
+    return {
+      name: '',
+      email: '',
+      accessToken: '',
+      refreshToken: '',
+    };
+  } catch (error) {
+    if ((error as AxiosError).response?.data.code === 'expired') {
+      Alert.alert('알림', '다시 로그인해주세요');
+      return {
+        name: '',
+        email: '',
+        accessToken: '',
+        refreshToken: '',
+      };
+    }
+
+    return {
+      name: '',
+      email: '',
+      accessToken: '',
+      refreshToken: '',
+    };
+  } finally {
+    // TO DO : 스플래시 스크린 만들기
+  }
+};
+
+export const APIShowMetheMoney = async (): Promise<number> => {
+  const accessToken = useSelector((state: RootState) => state.user.accessToken);
+
+  console.log(accessToken);
+
+  try {
+    const res = await axios.get(`${API_URL}/showmethemoney`, {
+      headers: {authorization: `Bearer ${accessToken}`},
+    });
+
+    if (res.data) {
+      return res.data.data;
+    }
+
+    return 0;
+  } catch (error) {
+    console.error((error as AxiosError).response);
+    Alert.alert('알림', error.response.data.message);
+    return 0;
   }
 };
