@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {IUser} from '../apis/user/user.types';
 
 const initialState: IUser = {
@@ -14,9 +14,10 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      state.accessToken = action.payload;
+      state.name = action.payload.name;
+      state.accessToken = action.payload.accessToken;
     },
-    setMoney(state, action) {
+    setMoney(state, action: PayloadAction<number>) {
       state.money = action.payload;
     },
   },

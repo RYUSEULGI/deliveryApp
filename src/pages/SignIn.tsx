@@ -51,14 +51,18 @@ const SignIn = ({navigation}: SignInScreenProps) => {
 
     setLoading(true);
 
-    const {accessToken, refreshToken} = await APISignIn({email, password});
+    const {name, accessToken, refreshToken} = await APISignIn({
+      email,
+      password,
+    });
 
     if (!accessToken) {
       setLoading(false);
       return;
     }
 
-    dispatch(userSlice.actions.setUser(accessToken));
+    dispatch(userSlice.actions.setUser({name, accessToken}));
+    await EncryptedStorage.setItem('accessToken', accessToken);
     await EncryptedStorage.setItem('refreshToken', refreshToken);
     setLoading(false);
 

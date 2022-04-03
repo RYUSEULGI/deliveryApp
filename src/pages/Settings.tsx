@@ -14,13 +14,13 @@ const Settings = () => {
   const name = useSelector((state: RootState) => state.user.name);
 
   useEffect(() => {
+    const getMoney = async () => {
+      const price = await APIShowMetheMoney();
+      dispatch(userSlice.actions.setMoney(price));
+    };
+
     getMoney();
   }, [dispatch]);
-
-  const getMoney = async () => {
-    await APIShowMetheMoney();
-    // dispatch(userSlice.actions.setMoney(price));
-  };
 
   const handleLogout = async () => {
     Alert.alert('알림', '로그아웃 되었습니다.');
@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 20,
     fontWeight: '700',
+    textAlign: 'center',
   },
   loginButton: {
     padding: 10,

@@ -1,10 +1,9 @@
 import axios, {AxiosError} from 'axios';
 import {Alert} from 'react-native';
-import {useSelector} from 'react-redux';
 import {API_URL} from '../../constants/basic';
-import {RootState} from '../../store/reducer';
 import {getToken} from '../response';
 import {ISignupResponse} from './user.types';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 export const APISignUp = async (parameter: {
   email: string;
@@ -55,7 +54,6 @@ export const APISignIn = async (parameter: {
 export const APIRefreshToken = async (): Promise<ISignupResponse> => {
   try {
     const refreshToken = getToken;
-    console.log(refreshToken);
 
     const res = await axios.post(
       `${API_URL}/refreshToken`,
@@ -101,9 +99,7 @@ export const APIRefreshToken = async (): Promise<ISignupResponse> => {
 };
 
 export const APIShowMetheMoney = async (): Promise<number> => {
-  const accessToken = useSelector((state: RootState) => state.user.accessToken);
-
-  console.log(accessToken);
+  const accessToken = await EncryptedStorage.getItem('accessToken');
 
   try {
     const res = await axios.get(`${API_URL}/showmethemoney`, {
