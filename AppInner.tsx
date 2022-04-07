@@ -10,11 +10,12 @@ import Settings from './src/pages/Settings';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import useSocket from './src/hooks/useSocket';
-// import {APIRefreshToken} from './src/apis/user/user';
-// import EncryptedStorage from 'react-native-encrypted-storage';
-// import userSlice from './src/slices/user';
+import {APIRefreshToken} from './src/apis/user/user';
+import userSlice from './src/slices/user';
 import {useAppDispatch} from './src/store';
 import orderSlice from './src/slices/order';
+import {APIIntercepter} from './src/apis/user/user';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -62,20 +63,23 @@ const AppInner = () => {
     }
   }, [isLoggedIn, disconnect]);
 
-  // useEffect 비동기로 사용하는 방법
   // useEffect(() => {
-  //   const getRefreshToken = async () => {
-  //     const {accessToken, refreshToken} = await APIRefreshToken();
+  //   APIIntercepter();
+  // }, []);
 
-  //     if (!accessToken) {
-  //       return;
-  //     }
+  useEffect(() => {
+    const getRefreshToken = async () => {
+      const {accessToken} = await APIRefreshToken();
 
-  //     dispatch(userSlice.actions.setUser(accessToken));
-  //     await EncryptedStorage.setItem('refreshToken', refreshToken);
-  //   };
-  //   getRefreshToken();
-  // }, [dispatch]);
+      if (!accessToken) {
+        return;
+      }
+
+      await EncryptedStorage.setItem('accessToken', accessToken);
+      dispatch(userSlice.actions.setUser({accessToken}));
+    };
+    getRefreshToken();
+  }, [dispatch]);
 
   return (
     <NavigationContainer>

@@ -20,15 +20,22 @@ const OrderList = ({item}: Props) => {
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
 
   const [detail, setDetail] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handlePress = useCallback(() => {
     setDetail(prev => !prev);
   }, []);
 
   const handleAccept = useCallback(async () => {
+    if (loading) {
+      return;
+    }
+
     if (!accessToken) {
       return;
     }
+
+    setLoading(true);
 
     const isSuccess = await APIAccept(item.orderId);
 
@@ -38,8 +45,9 @@ const OrderList = ({item}: Props) => {
 
     dispatch(orderSlice.actions.acceptOrder(item.orderId));
     Alert.alert('알림', '수락되었습니다.');
+    setLoading(false);
     navigation.navigate('Delivery');
-  }, [dispatch, navigation, accessToken, item.orderId]);
+  }, [dispatch, loading, navigation, accessToken, item.orderId]);
 
   const handleReject = useCallback(() => {
     Alert.alert('알림', '정말 거절하시겠습니까?', [
@@ -68,7 +76,10 @@ const OrderList = ({item}: Props) => {
         <View>
           <Text>상세보기</Text>
           <View style={styles.buttonWrapper}>
-            <Pressable onPress={handleAccept} style={styles.acceptButton}>
+            <Pressable
+              disabled={loading}
+              onPress={handleAccept}
+              style={styles.acceptButton}>
               <Text style={styles.buttonText}>수락하기</Text>
             </Pressable>
             <Pressable onPress={handleReject} style={styles.rejectButton}>

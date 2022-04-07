@@ -63,7 +63,7 @@ const SignIn = ({navigation}: SignInScreenProps) => {
 
     dispatch(userSlice.actions.setUser({name, accessToken}));
     await EncryptedStorage.setItem('accessToken', accessToken);
-    await EncryptedStorage.setItem('refreshToken', refreshToken);
+    await EncryptedStorage.setItem('refreshToken', refreshToken!);
     setLoading(false);
 
     Alert.alert('알림', '로그인되었습니다.');

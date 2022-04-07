@@ -1,24 +1,24 @@
 import {API_URL} from '../constants/basic';
 import {io, Socket} from 'socket.io-client';
-import {useCallback} from 'react';
+import {useCallback, useRef} from 'react';
 
-let socket: Socket | undefined;
+const useSocket = (): [Socket | null, () => void] => {
+  const socketRef = useRef<Socket | null>(null);
 
-const useSocket = (): [typeof socket, () => void] => {
   const disconnect = useCallback(() => {
-    if (socket) {
-      socket.disconnect();
-      socket = undefined;
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
   }, []);
 
-  if (!socket) {
-    socket = io(API_URL, {
+  if (!socketRef.current) {
+    socketRef.current = io(API_URL, {
       transports: ['websocket'],
     });
   }
 
-  return [socket, disconnect];
+  return [socketRef.current, disconnect];
 };
 
 export default useSocket;
