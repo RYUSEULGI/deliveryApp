@@ -14,8 +14,8 @@ import {APIRefreshToken} from './src/apis/user/user';
 import userSlice from './src/slices/user';
 import {useAppDispatch} from './src/store';
 import orderSlice from './src/slices/order';
-import {APIIntercepter} from './src/apis/user/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {usePermission} from './src/hooks/usePermission';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -39,6 +39,8 @@ const AppInner = () => {
   );
 
   const [socket, disconnect] = useSocket();
+
+  usePermission();
 
   useEffect(() => {
     const dataCallback = (data: any) => {

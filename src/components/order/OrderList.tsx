@@ -1,6 +1,7 @@
 import {NavigationProp, useNavigation} from '@react-navigation/core';
 import React, {useCallback, useState} from 'react';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
+import NaverMapView, {Marker, Path} from 'react-native-nmap';
 import {useSelector} from 'react-redux';
 import {LoggedInParamList} from '../../../AppInner';
 import {APIAccept} from '../../apis/order/order';
@@ -67,6 +68,8 @@ const OrderList = ({item}: Props) => {
     ]);
   }, [dispatch, item.orderId]);
 
+  const {start, end} = item;
+
   return (
     <View style={styles.orderContainer} key={`order-item-${item.orderId}`}>
       <Pressable onPress={handlePress}>
@@ -74,6 +77,35 @@ const OrderList = ({item}: Props) => {
       </Pressable>
       {detail && (
         <View>
+          <NaverMapView
+            style={{width: '100%', height: '100%'}}
+            zoomControl={false}
+            center={{
+              zoom: 10,
+              tilt: 50,
+              latitude: (start.latitude + end.latitude) / 2,
+              longitude: (start.longitude + end.longitude) / 2,
+            }}>
+            <Marker
+              coordinate={{
+                latitude: start.latitude,
+                longitude: start.longitude,
+              }}
+              pinColor="blue"
+            />
+            <Path
+              coordinates={[
+                {latitude: start.latitude, longitude: start.longitude},
+                {latitude: end.latitude, longitude: end.longitude},
+              ]}
+            />
+            <Marker
+              coordinate={{
+                latitude: end.latitude,
+                longitude: end.longitude,
+              }}
+            />
+          </NaverMapView>
           <Text>상세보기</Text>
           <View style={styles.buttonWrapper}>
             <Pressable
